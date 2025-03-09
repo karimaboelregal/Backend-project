@@ -98,3 +98,16 @@ func SearchMessagesHandler(c *gin.Context) {
 	// Return the search results
 	c.JSON(http.StatusOK, messages)
 }
+
+
+func GetApplicationHandler(c *gin.Context) {
+	applicationToken := c.Param("application_id")
+
+	app, err := api.GetApplication(applicationToken)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, app)
+}

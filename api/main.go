@@ -2,7 +2,6 @@ package main
 
 import (
 	"api/internal/handlers"
-
 	"github.com/gin-gonic/gin"
 )
 
@@ -11,6 +10,7 @@ func main() {
 
 	// Application & Chat Routes
 	r.POST("/applications", handlers.CreateApplicationHandler)
+	r.GET("/applications/:application_id", handlers.GetApplicationHandler)
 	r.POST("/applications/:application_id/chats", handlers.CreateChatHandler)
 	r.GET("/applications/:application_id/chats/:chat_id", handlers.GetChatHandler)
 

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"strings"
+	"net/http"
 )
 
 type Application struct {
@@ -35,3 +36,43 @@ func CreateApplication(name string) (*Application, error) {
 
 	return &app, nil
 }
+
+
+
+type ApplicationGetApi struct {
+	ID         int    `json:"id"`
+	Token      string `json:"token"`
+	Name       string `json:"name"`
+	ChatsCount int    `json:"chats_count"`
+	CreatedAt  string `json:"created_at"`
+	UpdatedAt  string `json:"updated_at"`
+}
+
+func GetApplication(applicationToken string) (*ApplicationGetApi, error) {
+	url := fmt.Sprintf("http://backend:3000/applications/%s", applicationToken)
+
+	resp, err := HTTPClient.Get(url) 
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("failed to fetch application: status %d", resp.StatusCode)
+	}
+
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+
+	var app ApplicationGetApi
+	if err := json.Unmarshal(body, &app); err != nil {
+		return nil, err
+	}
+
+	return &app, nil
+}
+
