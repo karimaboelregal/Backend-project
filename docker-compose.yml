@@ -1,0 +1,94 @@
+services:
+  db:
+    image: mysql:8
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: myapp_db2
+      MYSQL_USER: myuser
+      MYSQL_PASSWORD: mypassword
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - myapp_network
+
+  redis:
+    image: redis:latest
+    restart: always
+    ports:
+      - "6379:6379"
+    networks:
+      - myapp_network
+
+  backend:
+    build: ./backend
+    depends_on:
+      - db
+      - redis
+    environment:
+      DATABASE_HOST: db
+      DATABASE_USER: myuser
+      DATABASE_PASSWORD: mypassword
+      DATABASE_NAME: myapp_db2
+      REDIS_HOST: redis
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./backend:/app
+    command: >
+      bash -c "rm -f tmp/pids/server.pid &&
+      bundle exec rails db:create &&
+      bundle exec rails db:migrate &&
+      bundle exec rails s -b 0.0.0.0"
+    networks:
+      - myapp_network
+
+  golang_api:
+    build: ./api
+    depends_on:
+      - backend
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./api:/app
+    working_dir: /app
+    command: go run main.go
+    networks:
+      - myapp_network
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.5.3
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+    ports:
+      - "9200:9200"
+    networks:
+      - myapp_network
+  sidekiq:
+    build: ./backend
+    depends_on:
+      - redis
+      - db
+      - backend
+    environment:
+      DATABASE_HOST: db
+      DATABASE_USER: myuser
+      DATABASE_PASSWORD: mypassword
+      DATABASE_NAME: myapp_db2
+      REDIS_HOST: redis
+    volumes:
+      - ./backend:/app
+    networks:
+      - myapp_network
+    command: bundle exec sidekiq
+    restart: always
+networks:
+  myapp_network:  
+    driver: bridge
+
+volumes:
+  mysql_data:

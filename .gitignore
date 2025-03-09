@@ -13,3 +13,4 @@ backend/tmp/storage/*
 !backend/tmp/storage/
 !backend/tmp/storage/.keep
 backend/config/master.key
+backend/vendor/*

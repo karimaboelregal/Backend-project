@@ -1,0 +1,6 @@
+:concurrency: 5
+:queues:
+  - default
+  - mailers
+:redis:
+  url: redis://backend-ror-golang-redis-1:6379/1
