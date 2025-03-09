@@ -1,0 +1,15 @@
+backend/.bundle
+backend/.env*
+backend/log/*
+backend/tmp/*
+!backend/log/.keep
+!backend/tmp/.keep
+backend/tmp/pids/*
+!backend/tmp/pids/
+!backend/tmp/pids/.keep
+backend/storage/*
+!backend/storage/.keep
+backend/tmp/storage/*
+!backend/tmp/storage/
+!backend/tmp/storage/.keep
+backend/config/master.key
