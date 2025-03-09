@@ -112,11 +112,64 @@ docker-compose restart backend
 
 ---
 
+## **Project Structure**
+
+### **Where can we find your database schema?**
+
+The database schema can be found in the **Rails project** under:
+
+```
+backend/db/schema.rb
+```
+
+### **Where can we find each API controller you implemented?**
+
+All API controllers are located in the **Rails project** under:
+
+```
+backend/app/controllers/
+```
+
+### **Where can we find workers you implemented (if any)?**
+
+Sidekiq jobs can be found in:
+
+```
+backend/app/jobs/
+```
+
+---
+
+## **Database Indexes**
+
+Indexes that were added for performance optimization:
+
+- **Applications**:
+  - `token (unique)`
+- **Chats**:
+  - `number (unique per application)`
+- **Messages**:
+  - `chat_id`
+  - `number (unique per chat)`
+  - `body (full-text index for search using Elasticsearch)`
+
+### **What does "full index for search" mean?**
+
+The **Messages** table uses **Elasticsearch** for full-text search indexing. Unlike traditional database indexes, Elasticsearch provides:
+
+- **Fuzzy matching** for handling typos and variations.
+- **Relevance scoring** to prioritize better results.
+- **Fast text-based searching** across large datasets.
+
+This improves the speed and accuracy of search queries over the **body** column in messages.
+
+---
+
 ## **Things We Could Improve On**
 
 - Implement authentication for API endpoints
 - Improve error handling for concurrent requests
 - Enhance search capabilities with Elasticsearch tuning
-- Optimize Sidekiq job processing
-- Add rate limiting to prevent abuse
+- Optimize database indexing for better performance
+- Introduce rate limiting to prevent spam requests
 
